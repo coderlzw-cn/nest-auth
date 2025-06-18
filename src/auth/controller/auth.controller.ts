@@ -7,14 +7,14 @@ import { getDirectoryTree } from '../../dir-tree';
 import { CheckSignatureDto } from '../dto/check-signature.dto';
 import { AuthService } from '../service/auth.service';
 
-@Controller()
+@Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
   ) {}
 
-  @Get()
+  @Get('user')
   getUserInfo() {
     console.log('Release');
 
