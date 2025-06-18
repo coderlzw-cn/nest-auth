@@ -36,7 +36,7 @@ export class AuthService {
   }
 
   checkSignature(checkSignatureDto: CheckSignatureDto) {
-    const token = this.configService.get<string>('WECHAT_TOKEN');
+    const token = this.configService.get<string>('WECHAT_APP_TOKEN');
     const str = [token, checkSignatureDto.timestamp, checkSignatureDto.nonce]
       .sort()
       .join('');

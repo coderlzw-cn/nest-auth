@@ -35,7 +35,7 @@ export class AuthController {
 
     console.log('当前文件所在目录的父目录', JSON.stringify(getDirectoryTree(process.cwd())));
 
-    return process.env;
+    return 'Release';
   }
 
   @ApiOperation({ summary: '微信签名验证', deprecated: true })
