@@ -1,18 +1,9 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Headers,
-  Post,
-  Query,
-  Req,
-  Res,
-  Sse,
-} from '@nestjs/common';
+import { Body, Controller, Get, Headers, Post, Query, Req, Res, Sse } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiOperation } from '@nestjs/swagger';
 import fs from 'node:fs';
 import path from 'node:path';
+import { getDirectoryTree } from '../../dir-tree';
 import { CheckSignatureDto } from '../dto/check-signature.dto';
 import { AuthService } from '../service/auth.service';
 
@@ -25,7 +16,7 @@ export class AuthController {
 
   @Get()
   getUserInfo() {
-    console.log('999999', process.env);
+    console.log('Release');
 
     // 获取当前工作目录
     console.log('当前工作目录', process.cwd());
@@ -42,7 +33,7 @@ export class AuthController {
     // 获取当前文件所在目录的父目录
     console.log(path.resolve('../../', process.cwd()));
 
-    console.log('当前文件所在目录的父目录', fs.readdirSync('/var/task/src'));
+    console.log('当前文件所在目录的父目录', JSON.stringify(getDirectoryTree(process.cwd())));
 
     return process.env;
   }
