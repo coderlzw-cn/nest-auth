@@ -1,0 +1,72 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [22.x] # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - name: 拉取仓库代码 
+        uses: actions/checkout@v4
+      - name: 使用 Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: 启用 pnpm
+        run: |
+          corepack enable
+          pnpm -v
+      - name: 使用 Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          cache: 'pnpm'
+      # - run: corepack enable  # 启用 Corepack（用于管理 pnpm 版本）
+      # - run: pnpm install --frozen-lockfile  # 确保依赖版本与 pnpm-lock.yaml 完全一致
+      # - run: pnpm run -if-present build      # 如果脚本没有定义，不会跑出异常
+      - run: |
+         pnpm -v
+         pnpm install --frozen-lockfile
+         pnpm run -if-present build
+      - name: 保存构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: ./ # 构建产物
+      # - name: 部署到 Vercel
+      #   run: npx vercel --token ${VERCEL_TOKEN} --prod
+      #   env:
+      #       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      #       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      #       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  deploy:
+     name: 部署到 Vercel
+     needs: build  # 确保此 Job 在 build 成功后运行
+     runs-on: ubuntu-latest
+
+     steps:
+       - name: 下载构建产物
+         uses: actions/download-artifact@v4
+         with:
+           name: build-output
+
+       - name: 使用 Node.js
+         uses: actions/setup-node@v4
+       - run: ls -la
+
+       - name: 部署到 Vercel
+         run: npx vercel --token ${VERCEL_TOKEN} --prod
+         env:
+           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
